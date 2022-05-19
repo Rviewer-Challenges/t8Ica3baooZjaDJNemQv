@@ -1,8 +1,9 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:memory_game/src/core/themes/colors.dart';
 import 'package:memory_game/src/core/themes/text_styles.dart';
 import 'package:memory_game/src/features/dashboard/presentation/dashboard_screen.dart';
+import 'package:memory_game/src/features/menu/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:memory_game/src/features/menu/presentation/widgets/rick_morty_memory_icons.dart';
 
 class MenuScreen extends StatelessWidget {
@@ -11,22 +12,11 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Object? groupValue = 0;
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: CustomColors.primary,
         appBar: NeumorphicAppBar(
           centerTitle: true,
-          title: NeumorphicText(
-            "Rick & Morty",
-            style: const NeumorphicStyle(
-                depth: 3, color: CustomColors.primary, shape: NeumorphicShape.flat),
-            textStyle: NeumorphicTextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
           actions: <Widget>[
             GestureDetector(
               child: NeumorphicIcon(
@@ -41,82 +31,106 @@ class MenuScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: Center(
-          child: Column(
+        body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: NeumorphicIcon(
+              NeumorphicIcon(
                 RickMortyMemory.rick_morty_portal,
                 style: const NeumorphicStyle(
-                  color: CustomColors.primary,
+                  color: CustomColors.secondary,
                   depth: 5,
                   shape: NeumorphicShape.convex,
+                  intensity: 1,
                 ),
                 size: 200,
               ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                NeumorphicRadio(
-                  style: NeumorphicRadioStyle(
-                    shape: NeumorphicShape.concave,
-                    unselectedColor: CustomColors.primary,
-                    boxShape: NeumorphicBoxShape.roundRect(
-                      BorderRadius.circular(10),
-                    ),
-                    
-                  ),
-                  groupValue: groupValue,
-                  value: "A",
-                  onChanged: (value) {
-                    groupValue = value;
-                  },
-                  padding: const EdgeInsets.all(14.0),
-
-                  child: Text("Easy" , style: TextStyles.textBtnStyle),
-                ),
-                const SizedBox(width: 12),
-                NeumorphicRadio(
-                  value: "B",
-                  style: NeumorphicRadioStyle(
-                    shape: NeumorphicShape.concave,
-                    unselectedColor: CustomColors.primary,
-                    boxShape: NeumorphicBoxShape.roundRect(
-                    BorderRadius.circular(10),
-                  )),
-                  groupValue: groupValue,
-                  onChanged: (value) {},
-                  padding: const EdgeInsets.all(14.0),
-                  child: Text("Medium", style: TextStyles.textBtnStyle),
-                ),
-                const SizedBox(width: 12),
-                NeumorphicRadio(
-                  style: NeumorphicRadioStyle(
-                    shape: NeumorphicShape.concave,
-                    unselectedColor: CustomColors.primary,
-                    boxShape: NeumorphicBoxShape.roundRect(
-                    BorderRadius.circular(10),
-                  )),
-                  groupValue: groupValue,
-                  value: "C",
-                  onChanged: (value) {},
-                  padding: const EdgeInsets.all(14.0),
-                  child: Text("Hard", style: TextStyles.textBtnStyle),
-                ),
-              ],
-            ),
-            const Spacer(),
-            const Padding(
-              padding: EdgeInsets.only(bottom:18.0),
-              child: CustomButton(),
-            ),
-          ]),
-        ),
+              const SizedBox(height: 80),
+              const _RadioButtonRow(),
+              const Spacer(),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 18.0),
+                child: CustomButton(),
+              ),
+            ]),
       ),
+    );
+  }
+}
+
+class _RadioButtonRow extends StatelessWidget {
+  const _RadioButtonRow({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<NavigationBloc, NavigationState>(
+      builder: (context, state) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            NeumorphicRadio(
+              style: NeumorphicRadioStyle(
+                shape: NeumorphicShape.concave,
+                unselectedColor: CustomColors.primary,
+                boxShape: NeumorphicBoxShape.roundRect(
+                  BorderRadius.circular(10),
+                ),
+              ),
+              groupValue: state.levelSelected,
+              value: "A",
+              onChanged: (value) {
+                if (value != null) {
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(OnSetLevelSelected(value));
+                }
+              },
+              padding: const EdgeInsets.all(14.0),
+              child: Text("Easy", style: TextStyles.textBtnStyle),
+            ),
+            const SizedBox(width: 12),
+            NeumorphicRadio(
+              value: "B",
+              style: NeumorphicRadioStyle(
+                  shape: NeumorphicShape.concave,
+                  unselectedColor: CustomColors.primary,
+                  boxShape: NeumorphicBoxShape.roundRect(
+                    BorderRadius.circular(10),
+                  )),
+              groupValue: state.levelSelected,
+              onChanged: (value) {
+                if (value != null) {
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(OnSetLevelSelected(value));
+                }
+              },
+              padding: const EdgeInsets.all(14.0),
+              child: Text("Medium", style: TextStyles.textBtnStyle),
+            ),
+            const SizedBox(width: 12),
+            NeumorphicRadio(
+              style: NeumorphicRadioStyle(
+                  shape: NeumorphicShape.concave,
+                  unselectedColor: CustomColors.primary,
+                  boxShape: NeumorphicBoxShape.roundRect(
+                    BorderRadius.circular(10),
+                  )),
+              groupValue: state.levelSelected,
+              value: "C",
+              onChanged: (value) {
+                if (value != null) {
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(OnSetLevelSelected(value));
+                }
+              },
+              padding: const EdgeInsets.all(14.0),
+              child: Text("Hard", style: TextStyles.textBtnStyle),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -128,22 +142,22 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    return NeumorphicButton(
-        padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 10),
-        onPressed: () {
-          Navigator.pushNamed(context, DashboardScreen.routeName);
-        
-        },
-        style: NeumorphicStyle(
-          color: CustomColors.primary,
-          shape: NeumorphicShape.flat,
-          depth: 4,
-          boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(20)),
-        ),
-        child: Text(
-          'PLAY',
-          style: TextStyles.textBtnStyle
-        ));
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: NeumorphicButton(
+          padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 10),
+          onPressed: () {
+            Navigator.pushNamed(context, DashboardScreen.routeName, arguments: {
+              "level": BlocProvider.of<NavigationBloc>(context).state.levelSelected,
+            });
+          },
+          style: NeumorphicStyle(
+            color: CustomColors.primary,
+            shape: NeumorphicShape.flat,
+            depth: 4,
+            boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(20)),
+          ),
+          child: Center(child: Text('PLAY', style: TextStyles.textBtnStyle))),
+    );
   }
 }

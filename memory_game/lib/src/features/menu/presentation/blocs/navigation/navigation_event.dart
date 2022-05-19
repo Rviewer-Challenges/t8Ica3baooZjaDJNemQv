@@ -6,3 +6,9 @@ abstract class NavigationEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class OnSetLevelSelected extends NavigationEvent {
+  final Object levelSelected;
+
+  const OnSetLevelSelected(this.levelSelected);
+}

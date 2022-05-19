@@ -1,10 +1,5 @@
-import 'dart:ui';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:memory_game/src/app/routes.dart';
 import 'package:memory_game/src/features/menu/presentation/menu_screen.dart';
 
