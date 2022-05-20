@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:memory_game/src/core/themes/colors.dart';
 import 'package:memory_game/src/core/themes/text_styles.dart';
+import 'package:memory_game/src/features/dashboard/presentation/blocs/dashboard/dashboard_bloc.dart';
 import 'package:memory_game/src/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:memory_game/src/features/menu/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:memory_game/src/features/menu/presentation/widgets/rick_morty_memory_icons.dart';
@@ -147,8 +148,22 @@ class CustomButton extends StatelessWidget {
       child: NeumorphicButton(
           padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 10),
           onPressed: () {
+            var level =
+                BlocProvider.of<NavigationBloc>(context).state.levelSelected;
+
+            switch (level) {
+              case "A":
+                BlocProvider.of<DashboardBloc>(context).createDashboard(16);
+                break;
+              case "B":
+                BlocProvider.of<DashboardBloc>(context).createDashboard(24);
+                break;
+              case "C":
+                BlocProvider.of<DashboardBloc>(context).createDashboard(30);
+                break;
+            }
             Navigator.pushNamed(context, DashboardScreen.routeName, arguments: {
-              "level": BlocProvider.of<NavigationBloc>(context).state.levelSelected,
+              "level": level,
             });
           },
           style: NeumorphicStyle(

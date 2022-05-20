@@ -27,6 +27,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  animate_do: ^2.1.0
   cupertino_icons: ^1.0.2
   dio: ^4.0.6
   dio_logging_interceptor: ^1.0.1
@@ -42,6 +43,7 @@ dependencies:
   get_it: ^7.2.0
   google_fonts: ^2.3.2
   intl: ^0.17.0
+  sealed_annotations: ^1.13.0
 
 dev_dependencies:
   flutter_lints: ^1.0.0
@@ -69,12 +71,12 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-      - family: RickMortyMemory
-        fonts:
-          - asset: fonts/RickMortyMemory.ttf
-      - family: RickMortyFont
-        fonts:
-          - asset: fonts/get_schwifty.ttf
+    - family: RickMortyMemory
+      fonts:
+        - asset: fonts/RickMortyMemory.ttf
+    - family: RickMortyFont
+      fonts:
+        - asset: fonts/get_schwifty.ttf
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

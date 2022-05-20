@@ -3,8 +3,6 @@ part of 'timer_bloc.dart';
  abstract class TimerState extends Equatable {
  final int duration;
  
- /// current value of timer to show to the UI
- 
  const TimerState(this.duration);
  @override
  
