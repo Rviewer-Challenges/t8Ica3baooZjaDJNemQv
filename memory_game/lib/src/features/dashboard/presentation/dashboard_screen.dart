@@ -7,6 +7,8 @@ import 'package:memory_game/src/features/dashboard/presentation/blocs/dashboard/
 import 'package:memory_game/src/features/dashboard/presentation/blocs/timer/timer_bloc.dart';
 import 'package:memory_game/src/features/menu/presentation/widgets/rick_morty_memory_icons.dart';
 
+import 'blocs/game/game_bloc.dart';
+
 class DashboardScreen extends StatelessWidget {
   static const routeName = 'dashboard';
   const DashboardScreen({Key? key}) : super(key: key);
@@ -85,101 +87,105 @@ class _dataWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+    return BlocBuilder<GameBloc, GameState>(
+      builder: (context, state) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            NeumorphicIcon(
-              Icons.move_up_rounded,
-              size: 30,
-              style: const NeumorphicStyle(
-                color: CustomColors.secondary,
-                depth: 2,
-                shape: NeumorphicShape.flat,
-                intensity: 1,
-              ),
-            ),
-            Neumorphic(
-                style: const NeumorphicStyle(
-                    shape: NeumorphicShape.concave,
-                    border:
-                        NeumorphicBorder(width: 2, color: CustomColors.primary),
-                    depth: 3,
-                    lightSource: LightSource.topLeft,
-                    color: CustomColors.primary),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: NeumorphicText(
-                    '01',
-                    style: const NeumorphicStyle(
-                      color: CustomColors.secondary,
-                      depth: 2,
-                      shape: NeumorphicShape.flat,
-                      intensity: 1,
-                    ),
-                    textStyle: NeumorphicTextStyle(fontSize: 30),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                NeumorphicIcon(
+                  Icons.move_up_rounded,
+                  size: 30,
+                  style: const NeumorphicStyle(
+                    color: CustomColors.secondary,
+                    depth: 2,
+                    shape: NeumorphicShape.flat,
+                    intensity: 1,
                   ),
-                ))
-          ],
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            NeumorphicIcon(
-              Icons.timer_sharp,
-              size: 30,
-              style: const NeumorphicStyle(
-                color: CustomColors.secondary,
-                depth: 2,
-                shape: NeumorphicShape.flat,
-                intensity: 1,
-              ),
-            ),
-            const _TimerWidget(),
-          ],
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            NeumorphicIcon(
-              Icons.memory_rounded,
-              size: 30,
-              style: const NeumorphicStyle(
-                color: CustomColors.secondary,
-                depth: 2,
-                shape: NeumorphicShape.flat,
-                intensity: 1,
-              ),
-            ),
-            Neumorphic(
-                style: const NeumorphicStyle(
-                    shape: NeumorphicShape.concave,
-                    border:
-                        NeumorphicBorder(width: 2, color: CustomColors.primary),
-                    depth: 3,
-                    lightSource: LightSource.topLeft,
-                    color: CustomColors.primary),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: NeumorphicText(
-                    '01',
+                ),
+                Neumorphic(
                     style: const NeumorphicStyle(
-                      color: CustomColors.secondary,
-                      depth: 2,
-                      intensity: 1,
-                      shape: NeumorphicShape.flat,
-                    ),
-                    textStyle: NeumorphicTextStyle(fontSize: 30),
+                        shape: NeumorphicShape.concave,
+                        border: NeumorphicBorder(
+                            width: 2, color: CustomColors.primary),
+                        depth: 3,
+                        lightSource: LightSource.topLeft,
+                        color: CustomColors.primary),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: NeumorphicText(
+                        state.moves<10 ? '0${state.moves}' : '${state.moves}',
+                        style: const NeumorphicStyle(
+                          color: CustomColors.secondary,
+                          depth: 2,
+                          shape: NeumorphicShape.flat,
+                          intensity: 1,
+                        ),
+                        textStyle: NeumorphicTextStyle(fontSize: 30),
+                      ),
+                    ))
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                NeumorphicIcon(
+                  Icons.timer_sharp,
+                  size: 30,
+                  style: const NeumorphicStyle(
+                    color: CustomColors.secondary,
+                    depth: 2,
+                    shape: NeumorphicShape.flat,
+                    intensity: 1,
                   ),
-                )),
+                ),
+                const _TimerWidget(),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                NeumorphicIcon(
+                  Icons.memory_rounded,
+                  size: 30,
+                  style: const NeumorphicStyle(
+                    color: CustomColors.secondary,
+                    depth: 2,
+                    shape: NeumorphicShape.flat,
+                    intensity: 1,
+                  ),
+                ),
+                Neumorphic(
+                    style: const NeumorphicStyle(
+                        shape: NeumorphicShape.concave,
+                        border: NeumorphicBorder(
+                            width: 2, color: CustomColors.primary),
+                        depth: 3,
+                        lightSource: LightSource.topLeft,
+                        color: CustomColors.primary),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: NeumorphicText(
+                        state.remaining < 10 ? '0${state.remaining}' : '${state.remaining}',
+                        style: const NeumorphicStyle(
+                          color: CustomColors.secondary,
+                          depth: 2,
+                          intensity: 1,
+                          shape: NeumorphicShape.flat,
+                        ),
+                        textStyle: NeumorphicTextStyle(fontSize: 30),
+                      ),
+                    )),
+              ],
+            ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -256,16 +262,11 @@ class _CardMemory extends StatelessWidget {
                 curve: Curves.easeInOut,
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    return NeumorphicText(
-                      card.character.toString(),
-                      style: const NeumorphicStyle(
-                        color: CustomColors.secondary,
-                        depth: 2,
-                        intensity: 1,
-                        shape: NeumorphicShape.flat,
-                      ),
-                      textStyle: NeumorphicTextStyle(
-                          fontSize: constraints.maxHeight * 0.5),
+                    return Image.network(
+                      state.cards.elementAt(card.position).info.image,
+                      fit: BoxFit.cover,
+                      width: constraints.maxWidth,
+                      height: constraints.maxHeight,
                     );
                   },
                 ),
@@ -306,6 +307,8 @@ class _CardMemory extends StatelessWidget {
               BlocProvider.of<DashboardBloc>(context).add(OnCardTapped(
                   position: card.position,
                   visible: !state.cards.elementAt(card.position).visible));
+              
+              BlocProvider.of<GameBloc>(context).addMove();
             },
           );
         }

@@ -14,7 +14,7 @@ class DioInterceptor {
   late Dio dio;
 
   /// The base url
-  static final String _baseUrl = dotenv.env['MAPBOX_BASE_URL']!;
+  static final String _baseUrl = dotenv.env['BASE_URL']!;
 
   /// Time to open an url
   static final int _connectTimeout = int.parse(dotenv.env['CONNECT_TIMEOUT']!);

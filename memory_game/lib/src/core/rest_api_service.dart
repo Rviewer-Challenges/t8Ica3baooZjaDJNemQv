@@ -30,7 +30,6 @@ class RestApiBaseHelper {
         options: options,
         cancelToken: cancelToken,
       );
-      print('DEBUG GET RESPONSE: ${response}');
       responseJson = _handleResponse(response);
     } on DioError catch (dioError) {
       _handleError(dioError);
@@ -123,7 +122,7 @@ class RestApiBaseHelper {
     return responseJson;
   }
 
-   /// DELETE request
+  /// DELETE request
   Future<dynamic> delete(
     String endpoint, {
     Map<String, dynamic>? queryParameters,
@@ -171,6 +170,7 @@ class RestApiBaseHelper {
 
   /// It handles http response
   dynamic _handleResponse(Response response) {
+    
     switch (response.statusCode) {
       case 200:
       case 201:
@@ -185,8 +185,9 @@ class RestApiBaseHelper {
           final data = {
             'code': '200',
             'message': 'Success',
-            'status':'ok',
-            'data': response.data};
+            'status': 'ok',
+            'data': response.data
+          };
           _hasSuccessErrorMessage(data);
         }
         if (successErrorMessage != null) {
@@ -218,8 +219,8 @@ class RestApiBaseHelper {
 
   /// It returns a message if status [200, 201] has any errors
   String? _hasSuccessErrorMessage(Map<String, dynamic> responseData) {
-    if (responseData.containsKey('status')) {
-      if (responseData['status'] != 200) {
+    if (responseData.containsKey('code')) {
+      if (responseData['code'] != 200) {
         return responseData['message'].toString();
       }
     }
