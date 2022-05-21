@@ -38,7 +38,7 @@ class MenuScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               NeumorphicIcon(
-                RickMortyMemory.rick_morty_portal,
+                RickMortyMemory.rickMortyPortal,
                 style: const NeumorphicStyle(
                   color: CustomColors.secondary,
                   depth: 5,

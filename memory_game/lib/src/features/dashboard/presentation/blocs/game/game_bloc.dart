@@ -14,6 +14,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<OnSetRemaining>((event, emit) {
       emit(state.copyWith(remaining: event.remaining));
     });
+
+    on<CleanBloc>((event, emit) {
+      emit(const GameState());
+    });
   }
 
   addMove(){
@@ -26,5 +30,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   
   subtractRemaining(){
     add(OnSetRemaining(state.remaining - 1));
+  }
+
+
+  cleanBloc(){
+    add(CleanBloc());
   }
 }

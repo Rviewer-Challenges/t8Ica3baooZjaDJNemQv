@@ -22,8 +22,8 @@ class RestApiBaseHelper {
 
     try {
       final dioInterceptor = DioInterceptor.instance;
-      dioInterceptor.dio.interceptors
-          .add(DioLoggingInterceptor(level: Level.body, compact: false));
+      // dioInterceptor.dio.interceptors
+      //     .add(DioLoggingInterceptor(level: Level.basic, compact: false));
       final response = await dioInterceptor.dio.get<dynamic>(
         url,
         queryParameters: queryParameters,

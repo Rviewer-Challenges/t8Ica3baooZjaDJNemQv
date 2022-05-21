@@ -1,4 +1,3 @@
-import 'package:memory_game/src/features/dashboard/domain/entities/character.dart';
 
 class RickMortyCard {
   const RickMortyCard({
@@ -13,14 +12,14 @@ class RickMortyCard {
   final int character;
   final bool visible;
   final bool isMatched;
-  final Character info;
+  final String info;
 
   RickMortyCard copyWith({
     int? position,
     int? character,
     bool? visible,
     bool? isMatched,
-    Character? info
+    String? info
   }) {
     return RickMortyCard(
       position: position ?? this.position,

@@ -21,6 +21,6 @@ class RickMortyMemory {
   static const _kFontFam = 'RickMortyMemory';
   static const String? _kFontPkg = null;
 
-  static const IconData rick_portal = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData rick_morty_portal = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData rickPortal = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData rickMortyPortal = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

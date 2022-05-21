@@ -33,23 +33,26 @@ class DashboardScreen extends StatelessWidget {
         appBar: NeumorphicAppBar(
           centerTitle: true,
           leading: GestureDetector(
-            child: NeumorphicIcon(
-              Icons.arrow_back_sharp,
-              style: const NeumorphicStyle(
-                color: CustomColors.primary,
-                intensity: 5,
-                depth: 4,
-                shape: NeumorphicShape.flat,
+              child: NeumorphicIcon(
+                Icons.arrow_back_sharp,
+                style: const NeumorphicStyle(
+                  color: CustomColors.primary,
+                  intensity: 5,
+                  depth: 4,
+                  shape: NeumorphicShape.flat,
+                ),
+                size: 40,
               ),
-              size: 40,
-            ),
-            onTap: () => Navigator.of(context).pop(),
-          ),
+              onTap: () {
+                BlocProvider.of<GameBloc>(context).cleanBloc();
+                BlocProvider.of<DashboardBloc>(context).cleanBloc();
+                Navigator.of(context).pop();
+              }),
         ),
         body: Center(
           child: Column(
             children: [
-              const _dataWidget(),
+              const _DataWidget(),
               const SizedBox(height: 20),
               Expanded(
                 child: Padding(
@@ -80,8 +83,8 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-class _dataWidget extends StatelessWidget {
-  const _dataWidget({
+class _DataWidget extends StatelessWidget {
+  const _DataWidget({
     Key? key,
   }) : super(key: key);
 
@@ -117,7 +120,7 @@ class _dataWidget extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: NeumorphicText(
-                        state.moves<10 ? '0${state.moves}' : '${state.moves}',
+                        state.moves < 10 ? '0${state.moves}' : '${state.moves}',
                         style: const NeumorphicStyle(
                           color: CustomColors.secondary,
                           depth: 2,
@@ -171,7 +174,9 @@ class _dataWidget extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: NeumorphicText(
-                        state.remaining < 10 ? '0${state.remaining}' : '${state.remaining}',
+                        state.remaining < 10
+                            ? '0${state.remaining}'
+                            : '${state.remaining}',
                         style: const NeumorphicStyle(
                           color: CustomColors.secondary,
                           depth: 2,
@@ -263,7 +268,7 @@ class _CardMemory extends StatelessWidget {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return Image.network(
-                      state.cards.elementAt(card.position).info.image,
+                      state.cards.elementAt(card.position).info,
                       fit: BoxFit.cover,
                       width: constraints.maxWidth,
                       height: constraints.maxHeight,
@@ -291,7 +296,7 @@ class _CardMemory extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return NeumorphicIcon(
-                    RickMortyMemory.rick_portal,
+                    RickMortyMemory.rickPortal,
                     style: const NeumorphicStyle(
                       color: CustomColors.tertiary,
                       depth: 3,
@@ -307,7 +312,7 @@ class _CardMemory extends StatelessWidget {
               BlocProvider.of<DashboardBloc>(context).add(OnCardTapped(
                   position: card.position,
                   visible: !state.cards.elementAt(card.position).visible));
-              
+
               BlocProvider.of<GameBloc>(context).addMove();
             },
           );

@@ -2,9 +2,11 @@ part of 'game_bloc.dart';
 
 abstract class GameEvent extends Equatable {
   const GameEvent();
+}
 
+class CleanBloc extends GameEvent {
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class OnSetMove extends GameEvent {
@@ -24,3 +26,4 @@ class OnSetRemaining extends GameEvent {
   @override
   List<Object> get props => [remaining];
 }
+
