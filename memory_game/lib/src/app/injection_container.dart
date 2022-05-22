@@ -7,14 +7,12 @@ import 'package:memory_game/src/features/dashboard/data/repositories/rick_morty_
 import 'package:memory_game/src/features/dashboard/domain/repositories/rick_morty_repository.dart';
 import 'package:memory_game/src/features/dashboard/domain/usecases/rick_morty_get_character_use_case.dart';
 import 'package:memory_game/src/features/dashboard/presentation/blocs/dashboard/dashboard_bloc.dart';
-import 'package:memory_game/src/features/dashboard/presentation/blocs/game/game_bloc.dart';
 import 'package:memory_game/src/features/dashboard/presentation/blocs/timer/timer_bloc.dart';
 import 'package:memory_game/src/features/menu/presentation/blocs/navigation/navigation_bloc.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> init() async {
-
   //**
   // Menu
   // */
@@ -32,13 +30,11 @@ Future<void> init() async {
     () => RickMortyGetCharacterUseCase(rickMortyRepository: getIt()),
   );
   getIt.registerLazySingleton<DashboardBloc>(() => DashboardBloc(
-    getCharacterUseCase: getIt(),
-  ));
-   getIt.registerLazySingleton<RickMortyRepository>(
+        getCharacterUseCase: getIt(),
+      ));
+  getIt.registerLazySingleton<RickMortyRepository>(
       () => RickMortyRepositoryImpl(rickMortyDataSource: getIt()));
 
-  getIt.registerLazySingleton<GameBloc>(() => GameBloc());
-
-getIt.registerLazySingleton(() => RestApiBaseHelper());
-getIt.registerLazySingleton(() => const FlutterSecureStorage());
+  getIt.registerLazySingleton(() => RestApiBaseHelper());
+  getIt.registerLazySingleton(() => const FlutterSecureStorage());
 }

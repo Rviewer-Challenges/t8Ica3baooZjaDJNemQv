@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:memory_game/src/features/dashboard/data/models/card.dart';
 import 'package:memory_game/src/features/dashboard/domain/usecases/rick_morty_get_character_use_case.dart';
 
@@ -19,8 +20,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         (event, emit) => emit(state.copyWith(cards: event.cards)));
     on<OnStartDashboardEvent>(
         (event, emit) => emit(state.copyWith(totalCount: event.totalCount)));
-    on<OnCardTapped>(
-        (event, emit) => _cardTapped(event.position));
+    on<OnCardTapped>((event, emit) => _cardTapped(event.position));
     on<OnPairNotMatched>(
         (event, emit) => _pairNotMatched(event.cardOne, event.cardTwo));
     on<OnPairMatched>(
@@ -29,6 +29,11 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<OnSetTap>((event, emit) => emit(state.copyWith(tapped: event.cards)));
     on<OnDashboardStartedEvent>(
         (event, emit) => emit(state.copyWith(isCreated: event.isCreated)));
+    on<OnSetTappedEvent>(
+        (event, emit) => emit(state.copyWith(isTapped: event.isTapped)));
+    on<OnSetMove>((event, emit) => emit(state.copyWith(moves: event.move)));
+    on<OnSetRemaining>(
+        (event, emit) => emit(state.copyWith(remaining: event.remaining)));
   }
 
   createDashboard(int totalCount) async {
@@ -75,14 +80,16 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     add(OnStartDashboardEvent(totalCount: totalCount));
     setDashboard(cards);
     add(const OnDashboardStartedEvent(isCreated: true));
+    setRemaining(totalCount ~/ 2);
   }
 
-  _cardTapped(int position) async{
+  _cardTapped(int position) async {
     final auxCards = state.cards.map((card) => card.copyWith()).toList();
     add(OnSetTap(cards: [auxCards[position]]));
     auxCards[position] = auxCards[position].copyWith(visible: true);
     await setDashboard(auxCards);
     if (state.tapped.isNotEmpty) {
+      addMove();
       if (state.tapped.elementAt(0).character == auxCards[position].character) {
         add(OnPairMatched(state.tapped.elementAt(0).position, position));
       } else {
@@ -103,6 +110,16 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         auxCards[cardTwo].copyWith(visible: true, isMatched: true);
     setDashboard(auxCards);
     add(const OnSetTap(cards: []));
+    subtractRemaining();
+  }
+
+  setRemaining(int remaining) {
+    print('DEBUG: $remaining');
+    add(OnSetRemaining(remaining));
+  }
+
+  subtractRemaining() {
+    add(OnSetRemaining(state.remaining - 1));
   }
 
   _pairNotMatched(int cardOne, int cardTwo) async {
@@ -115,6 +132,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         auxCards[cardTwo].copyWith(visible: false, isMatched: false);
     setDashboard(auxCards);
     add(const OnSetTap(cards: []));
+  }
+
+  addMove() {
+    add(OnSetMove(state.moves + 1));
   }
 
   cleanBloc() {

@@ -22,12 +22,17 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     on<TimerStarted>(_onStarted);
     on<TimerTicked>(_onTicked);
     on<TimerReset>(_onReset);
+    on<OnCleanBloc>((event, emit) => emit(const TimerInitial(_duration)));
   }
 
   @override
   Future<void> close() {
     _tickerSubscription?.cancel();
     return super.close();
+  }
+
+  void cleanBloc() {
+    add(OnCleanBloc());
   }
 
   void _onStarted(TimerStarted event, Emitter<TimerState> emit) {

@@ -8,7 +8,6 @@ import 'package:memory_game/src/features/dashboard/presentation/blocs/dashboard/
 import 'package:memory_game/src/features/dashboard/presentation/blocs/timer/timer_bloc.dart';
 import 'package:memory_game/src/features/menu/presentation/widgets/rick_morty_memory_icons.dart';
 
-import 'blocs/game/game_bloc.dart';
 
 class DashboardScreen extends StatelessWidget {
   static const routeName = 'dashboard';
@@ -16,6 +15,7 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TimerBloc timerBloc = BlocProvider.of<TimerBloc>(context);
     final arguments = (ModalRoute.of(context)?.settings.arguments ??
         <String, dynamic>{}) as Map;
     int columns = 0;
@@ -27,7 +27,6 @@ class DashboardScreen extends StatelessWidget {
         columns = 4;
         break;
     }
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: CustomColors.primary,
@@ -45,8 +44,8 @@ class DashboardScreen extends StatelessWidget {
                 size: 40,
               ),
               onTap: () {
-                BlocProvider.of<GameBloc>(context).cleanBloc();
                 BlocProvider.of<DashboardBloc>(context).cleanBloc();
+                BlocProvider.of<TimerBloc>(context).cleanBloc();
                 Navigator.of(context).pop();
               }),
         ),
@@ -61,6 +60,7 @@ class DashboardScreen extends StatelessWidget {
                   child: BlocBuilder<DashboardBloc, DashboardState>(
                     builder: (context, state) {
                       if (state.isCreated) {
+                        timerBloc.add(TimerStarted(timerBloc.state.duration));
                         return GridView.builder(
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
@@ -76,9 +76,7 @@ class DashboardScreen extends StatelessWidget {
                       } else {
                         return const LoadingIndicator(
                           indicatorType: Indicator.ballClipRotateMultiple,
-                          colors: [
-                            CustomColors.tertiary
-                          ],
+                          colors: [CustomColors.tertiary],
                           strokeWidth: 2,
                         );
                       }
@@ -102,7 +100,7 @@ class _DataWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GameBloc, GameState>(
+    return BlocBuilder<DashboardBloc, DashboardState>(
       builder: (context, state) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -218,16 +216,6 @@ class _TimerWidget extends StatefulWidget {
 
 class _TimerWidgetState extends State<_TimerWidget> {
   @override
-  initState() {
-    super.initState();
-    startTimer(context);
-  }
-
-  startTimer(BuildContext context) {
-    BlocProvider.of<TimerBloc>(context).add(const TimerStarted(60));
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<TimerBloc, TimerState>(
       builder: (context, state) {
@@ -327,7 +315,6 @@ class _CardMemory extends StatelessWidget {
                 if (!state.cards.elementAt(card.position).isMatched) {
                   BlocProvider.of<DashboardBloc>(context)
                       .add(OnCardTapped(position: card.position));
-                  BlocProvider.of<GameBloc>(context).addMove();
                 }
               },
             ),

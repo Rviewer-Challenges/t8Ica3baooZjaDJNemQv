@@ -3,7 +3,6 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:memory_game/src/core/themes/colors.dart';
 import 'package:memory_game/src/core/themes/text_styles.dart';
 import 'package:memory_game/src/features/dashboard/presentation/blocs/dashboard/dashboard_bloc.dart';
-import 'package:memory_game/src/features/dashboard/presentation/blocs/game/game_bloc.dart';
 import 'package:memory_game/src/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:memory_game/src/features/menu/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:memory_game/src/features/menu/presentation/widgets/rick_morty_memory_icons.dart';
@@ -155,15 +154,12 @@ class CustomButton extends StatelessWidget {
             switch (level) {
               case "A":
                 BlocProvider.of<DashboardBloc>(context).createDashboard(16);
-                BlocProvider.of<GameBloc>(context).setRemaining(8);
                 break;
               case "B":
                 BlocProvider.of<DashboardBloc>(context).createDashboard(24);
-                BlocProvider.of<GameBloc>(context).setRemaining(12);
                 break;
               case "C":
                 BlocProvider.of<DashboardBloc>(context).createDashboard(30);
-                BlocProvider.of<GameBloc>(context).setRemaining(15);
                 break;
             }
             Navigator.pushNamed(context, DashboardScreen.routeName, arguments: {

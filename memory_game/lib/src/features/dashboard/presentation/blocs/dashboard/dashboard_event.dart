@@ -22,6 +22,11 @@ class OnDashboardStartedEvent extends DashboardEvent {
   const OnDashboardStartedEvent({required this.isCreated});
 }
 
+class OnSetTappedEvent extends DashboardEvent {
+  final bool isTapped;
+  const OnSetTappedEvent({required this.isTapped});
+}
+
 class OnCardTapped extends DashboardEvent {
   final int position;
   const OnCardTapped({required this.position});
@@ -56,3 +61,21 @@ class OnSetTap extends DashboardEvent {
   @override
   List<Object> get props => [cards];
 }
+class OnSetMove extends DashboardEvent {
+  final int move;
+
+  const OnSetMove(this.move);
+
+  @override
+  List<Object> get props => [move];
+}
+
+class OnSetRemaining extends DashboardEvent {
+  final int remaining;
+
+  const OnSetRemaining(this.remaining);
+
+  @override
+  List<Object> get props => [remaining];
+}
+
