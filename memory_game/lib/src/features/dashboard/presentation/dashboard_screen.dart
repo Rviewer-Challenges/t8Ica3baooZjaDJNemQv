@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:memory_game/src/core/themes/colors.dart';
 import 'package:memory_game/src/features/dashboard/data/models/card.dart';
 import 'package:memory_game/src/features/dashboard/presentation/blocs/dashboard/dashboard_bloc.dart';
@@ -59,17 +60,28 @@ class DashboardScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: BlocBuilder<DashboardBloc, DashboardState>(
                     builder: (context, state) {
-                      return GridView.builder(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: columns,
-                                  crossAxisSpacing: 14,
-                                  mainAxisSpacing: 14),
-                          scrollDirection: Axis.vertical,
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: state.cards.length,
-                          itemBuilder: (BuildContext context, int index) =>
-                              _CardMemory(card: state.cards.elementAt(index)));
+                      if (state.isCreated) {
+                        return GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: columns,
+                                    crossAxisSpacing: 14,
+                                    mainAxisSpacing: 14),
+                            scrollDirection: Axis.vertical,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: state.cards.length,
+                            itemBuilder: (BuildContext context, int index) =>
+                                _CardMemory(
+                                    card: state.cards.elementAt(index)));
+                      } else {
+                        return const LoadingIndicator(
+                          indicatorType: Indicator.ballClipRotateMultiple,
+                          colors: [
+                            CustomColors.tertiary
+                          ],
+                          strokeWidth: 2,
+                        );
+                      }
                     },
                   ),
                 ),
@@ -277,44 +289,48 @@ class _CardMemory extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                BlocProvider.of<DashboardBloc>(context).add(OnCardTapped(
-                    position: card.position,
-                    visible: !state.cards.elementAt(card.position).visible));
+                if (!state.cards.elementAt(card.position).isMatched) {
+                  BlocProvider.of<DashboardBloc>(context)
+                      .add(OnCardTapped(position: card.position));
+                }
               },
             ),
           );
         } else {
-          return GestureDetector(
-            child: Neumorphic(
-              style: const NeumorphicStyle(
-                depth: 2,
-                color: CustomColors.primary,
-                intensity: 0.8,
-                shape: NeumorphicShape.convex,
+          return Pulse(
+            duration: const Duration(milliseconds: 500),
+            child: GestureDetector(
+              child: Neumorphic(
+                style: const NeumorphicStyle(
+                  depth: 2,
+                  color: CustomColors.primary,
+                  intensity: 0.8,
+                  shape: NeumorphicShape.convex,
+                ),
+                curve: Curves.easeInOut,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return NeumorphicIcon(
+                      RickMortyMemory.rickPortal,
+                      style: const NeumorphicStyle(
+                        color: CustomColors.tertiary,
+                        depth: 3,
+                        intensity: 5,
+                        shape: NeumorphicShape.flat,
+                      ),
+                      size: constraints.biggest.height + 10,
+                    );
+                  },
+                ),
               ),
-              curve: Curves.easeInOut,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return NeumorphicIcon(
-                    RickMortyMemory.rickPortal,
-                    style: const NeumorphicStyle(
-                      color: CustomColors.tertiary,
-                      depth: 3,
-                      intensity: 5,
-                      shape: NeumorphicShape.flat,
-                    ),
-                    size: constraints.biggest.height + 10,
-                  );
-                },
-              ),
+              onTap: () {
+                if (!state.cards.elementAt(card.position).isMatched) {
+                  BlocProvider.of<DashboardBloc>(context)
+                      .add(OnCardTapped(position: card.position));
+                  BlocProvider.of<GameBloc>(context).addMove();
+                }
+              },
             ),
-            onTap: () {
-              BlocProvider.of<DashboardBloc>(context).add(OnCardTapped(
-                  position: card.position,
-                  visible: !state.cards.elementAt(card.position).visible));
-
-              BlocProvider.of<GameBloc>(context).addMove();
-            },
           );
         }
       },

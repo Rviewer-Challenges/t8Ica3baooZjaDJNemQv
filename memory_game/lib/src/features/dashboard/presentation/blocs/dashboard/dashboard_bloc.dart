@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
@@ -19,13 +20,15 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<OnStartDashboardEvent>(
         (event, emit) => emit(state.copyWith(totalCount: event.totalCount)));
     on<OnCardTapped>(
-        (event, emit) => _cardTapped(event.position, event.visible));
+        (event, emit) => _cardTapped(event.position));
     on<OnPairNotMatched>(
         (event, emit) => _pairNotMatched(event.cardOne, event.cardTwo));
     on<OnPairMatched>(
         (event, emit) => _pairMatched(event.cardOne, event.cardTwo));
     on<OnCleanBloc>((event, emit) => emit(const DashboardState()));
     on<OnSetTap>((event, emit) => emit(state.copyWith(tapped: event.cards)));
+    on<OnDashboardStartedEvent>(
+        (event, emit) => emit(state.copyWith(isCreated: event.isCreated)));
   }
 
   createDashboard(int totalCount) async {
@@ -71,22 +74,19 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
     add(OnStartDashboardEvent(totalCount: totalCount));
     setDashboard(cards);
+    add(const OnDashboardStartedEvent(isCreated: true));
   }
 
-  _cardTapped(int position, bool visible) {
+  _cardTapped(int position) async{
     final auxCards = state.cards.map((card) => card.copyWith()).toList();
     add(OnSetTap(cards: [auxCards[position]]));
-    auxCards[position] = auxCards[position].copyWith(visible: visible);
-    setDashboard(auxCards);
-
+    auxCards[position] = auxCards[position].copyWith(visible: true);
+    await setDashboard(auxCards);
     if (state.tapped.isNotEmpty) {
-      if (state.tapped.elementAt(0).character ==
-          auxCards[position].character) {
-        add(OnPairMatched(state.tapped.elementAt(0).position,
-            position));
+      if (state.tapped.elementAt(0).character == auxCards[position].character) {
+        add(OnPairMatched(state.tapped.elementAt(0).position, position));
       } else {
-        add(OnPairNotMatched(state.tapped.elementAt(0).position,
-            position));
+        add(OnPairNotMatched(state.tapped.elementAt(0).position, position));
       }
     }
   }
@@ -105,10 +105,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     add(const OnSetTap(cards: []));
   }
 
-  _pairNotMatched(int cardOne, int cardTwo) {
+  _pairNotMatched(int cardOne, int cardTwo) async {
     final auxCards = state.cards.map((card) => card.copyWith()).toList();
     auxCards[cardOne] =
         auxCards[cardOne].copyWith(visible: false, isMatched: false);
+    setDashboard(auxCards);
+    await Future.delayed(const Duration(seconds: 1, milliseconds: 500));
     auxCards[cardTwo] =
         auxCards[cardTwo].copyWith(visible: false, isMatched: false);
     setDashboard(auxCards);

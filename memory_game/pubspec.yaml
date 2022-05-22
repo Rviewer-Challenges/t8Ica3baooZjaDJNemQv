@@ -44,6 +44,7 @@ dependencies:
   google_fonts: ^2.3.2
   intl: ^0.17.0
   json_annotation: ^4.5.0
+  loading_indicator: ^3.0.3
   sealed_annotations: ^1.13.0
 
 dev_dependencies:

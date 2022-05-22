@@ -17,10 +17,14 @@ class OnStartDashboardEvent extends DashboardEvent {
   const OnStartDashboardEvent({required this.totalCount});
 }
 
+class OnDashboardStartedEvent extends DashboardEvent {
+  final bool isCreated;
+  const OnDashboardStartedEvent({required this.isCreated});
+}
+
 class OnCardTapped extends DashboardEvent {
   final int position;
-  final bool visible;
-  const OnCardTapped({required this.position, required this.visible});
+  const OnCardTapped({required this.position});
 }
 
 class OnCleanBloc extends DashboardEvent {}
