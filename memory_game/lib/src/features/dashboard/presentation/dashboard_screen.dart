@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -6,8 +7,8 @@ import 'package:memory_game/src/core/themes/colors.dart';
 import 'package:memory_game/src/features/dashboard/data/models/card.dart';
 import 'package:memory_game/src/features/dashboard/presentation/blocs/dashboard/dashboard_bloc.dart';
 import 'package:memory_game/src/features/dashboard/presentation/blocs/timer/timer_bloc.dart';
+import 'package:memory_game/src/features/dashboard/presentation/widgets/custom_dialog.dart';
 import 'package:memory_game/src/features/menu/presentation/widgets/rick_morty_memory_icons.dart';
-
 
 class DashboardScreen extends StatelessWidget {
   static const routeName = 'dashboard';
@@ -27,65 +28,85 @@ class DashboardScreen extends StatelessWidget {
         columns = 4;
         break;
     }
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: CustomColors.primary,
-        appBar: NeumorphicAppBar(
-          centerTitle: true,
-          leading: GestureDetector(
-              child: NeumorphicIcon(
-                Icons.arrow_back_sharp,
-                style: const NeumorphicStyle(
-                  color: CustomColors.primary,
-                  intensity: 5,
-                  depth: 4,
-                  shape: NeumorphicShape.flat,
-                ),
-                size: 40,
-              ),
-              onTap: () {
-                BlocProvider.of<DashboardBloc>(context).cleanBloc();
-                BlocProvider.of<TimerBloc>(context).cleanBloc();
-                Navigator.of(context).pop();
-              }),
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              const _DataWidget(),
-              const SizedBox(height: 20),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: BlocBuilder<DashboardBloc, DashboardState>(
-                    builder: (context, state) {
-                      if (state.isCreated) {
-                        timerBloc.add(TimerStarted(timerBloc.state.duration));
-                        return GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: columns,
-                                    crossAxisSpacing: 14,
-                                    mainAxisSpacing: 14),
-                            scrollDirection: Axis.vertical,
-                            physics: const BouncingScrollPhysics(),
-                            itemCount: state.cards.length,
-                            itemBuilder: (BuildContext context, int index) =>
-                                _CardMemory(
-                                    card: state.cards.elementAt(index)));
-                      } else {
-                        return const LoadingIndicator(
-                          indicatorType: Indicator.ballClipRotateMultiple,
-                          colors: [CustomColors.tertiary],
-                          strokeWidth: 2,
-                        );
-                      }
-                    },
+    return BlocListener<DashboardBloc, DashboardState>(
+      listener: (context, state) {
+        if (state.remaining == 0) {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return const CustomDialog(
+                  title: '¡Felicidades!',
+                  description: 'Has ganado el juego',
+                  icon: RickMortyMemory.rickMortyPortal,
+                );
+              });
+        }
+      },
+      child: WillPopScope(
+        onWillPop: () async => false,
+        child: SafeArea(
+          child: Scaffold(
+            backgroundColor: CustomColors.primary,
+            appBar: NeumorphicAppBar(
+              centerTitle: true,
+              leading: GestureDetector(
+                  child: NeumorphicIcon(
+                    Icons.arrow_back_sharp,
+                    style: const NeumorphicStyle(
+                      color: CustomColors.primary,
+                      intensity: 5,
+                      depth: 4,
+                      shape: NeumorphicShape.flat,
+                    ),
+                    size: 40,
                   ),
-                ),
+                  onTap: () async {
+                    if(BlocProvider.of<DashboardBloc>(context).state.isCreated)
+                    {await BlocProvider.of<DashboardBloc>(context).cleanBloc();
+                    BlocProvider.of<TimerBloc>(context).cleanBloc();
+                    Navigator.of(context).pop();}
+                  }),
+            ),
+            body: Center(
+              child: Column(
+                children: [
+                  const _DataWidget(),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: BlocBuilder<DashboardBloc, DashboardState>(
+                        builder: (context, state) {
+                          if (state.isCreated) {
+                            timerBloc.add(TimerStarted(timerBloc.state.duration));
+                            return GridView.builder(
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: columns,
+                                        crossAxisSpacing: 14,
+                                        mainAxisSpacing: 14),
+                                scrollDirection: Axis.vertical,
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: state.cards.length,
+                                itemBuilder: (BuildContext context, int index) =>
+                                    _CardMemory(
+                                        card: state.cards.elementAt(index)));
+                          } else {
+                            return const LoadingIndicator(
+                              indicatorType: Indicator.ballClipRotateMultiple,
+                              colors: [CustomColors.tertiary],
+                              strokeWidth: 2,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
         ),
       ),
@@ -102,103 +123,121 @@ class _DataWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DashboardBloc, DashboardState>(
       builder: (context, state) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                NeumorphicIcon(
-                  Icons.move_up_rounded,
-                  size: 30,
-                  style: const NeumorphicStyle(
-                    color: CustomColors.secondary,
-                    depth: 2,
-                    shape: NeumorphicShape.flat,
-                    intensity: 1,
-                  ),
-                ),
-                Neumorphic(
+        return BlocListener<TimerBloc, TimerState>(
+          listener: (context, state) {
+            if (state.duration == 1) {
+          showDialog(
+              context: context, 
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return const CustomDialog(
+                  title: '¡Tiempo fuera!',
+                  description: 'Se acabo el tiempo, intentalo de nuevo.',
+                  icon: Icons.timer_off_outlined,
+                );
+              });
+        }
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  NeumorphicIcon(
+                    Icons.move_up_rounded,
+                    size: 30,
                     style: const NeumorphicStyle(
-                        shape: NeumorphicShape.concave,
-                        border: NeumorphicBorder(
-                            width: 2, color: CustomColors.primary),
-                        depth: 3,
-                        lightSource: LightSource.topLeft,
-                        color: CustomColors.primary),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: NeumorphicText(
-                        state.moves < 10 ? '0${state.moves}' : '${state.moves}',
-                        style: const NeumorphicStyle(
-                          color: CustomColors.secondary,
-                          depth: 2,
-                          shape: NeumorphicShape.flat,
-                          intensity: 1,
+                      color: CustomColors.secondary,
+                      depth: 2,
+                      shape: NeumorphicShape.flat,
+                      intensity: 1,
+                    ),
+                  ),
+                  Neumorphic(
+                      style: const NeumorphicStyle(
+                          shape: NeumorphicShape.concave,
+                          border: NeumorphicBorder(
+                              width: 2, color: CustomColors.primary),
+                          depth: 3,
+                          lightSource: LightSource.topLeft,
+                          color: CustomColors.primary),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: NeumorphicText(
+                          state.moves < 10
+                              ? '0${state.moves}'
+                              : '${state.moves}',
+                          style: const NeumorphicStyle(
+                            color: CustomColors.secondary,
+                            depth: 2,
+                            shape: NeumorphicShape.flat,
+                            intensity: 1,
+                          ),
+                          textStyle: NeumorphicTextStyle(fontSize: 30),
                         ),
-                        textStyle: NeumorphicTextStyle(fontSize: 30),
-                      ),
-                    ))
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                NeumorphicIcon(
-                  Icons.timer_sharp,
-                  size: 30,
-                  style: const NeumorphicStyle(
-                    color: CustomColors.secondary,
-                    depth: 2,
-                    shape: NeumorphicShape.flat,
-                    intensity: 1,
-                  ),
-                ),
-                const _TimerWidget(),
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                NeumorphicIcon(
-                  Icons.memory_rounded,
-                  size: 30,
-                  style: const NeumorphicStyle(
-                    color: CustomColors.secondary,
-                    depth: 2,
-                    shape: NeumorphicShape.flat,
-                    intensity: 1,
-                  ),
-                ),
-                Neumorphic(
+                      ))
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  NeumorphicIcon(
+                    Icons.timer_sharp,
+                    size: 30,
                     style: const NeumorphicStyle(
-                        shape: NeumorphicShape.concave,
-                        border: NeumorphicBorder(
-                            width: 2, color: CustomColors.primary),
-                        depth: 3,
-                        lightSource: LightSource.topLeft,
-                        color: CustomColors.primary),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: NeumorphicText(
-                        state.remaining < 10
-                            ? '0${state.remaining}'
-                            : '${state.remaining}',
-                        style: const NeumorphicStyle(
-                          color: CustomColors.secondary,
-                          depth: 2,
-                          intensity: 1,
-                          shape: NeumorphicShape.flat,
+                      color: CustomColors.secondary,
+                      depth: 2,
+                      shape: NeumorphicShape.flat,
+                      intensity: 1,
+                    ),
+                  ),
+                  const _TimerWidget(),
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  NeumorphicIcon(
+                    Icons.memory_rounded,
+                    size: 30,
+                    style: const NeumorphicStyle(
+                      color: CustomColors.secondary,
+                      depth: 2,
+                      shape: NeumorphicShape.flat,
+                      intensity: 1,
+                    ),
+                  ),
+                  Neumorphic(
+                      style: const NeumorphicStyle(
+                          shape: NeumorphicShape.concave,
+                          border: NeumorphicBorder(
+                              width: 2, color: CustomColors.primary),
+                          depth: 3,
+                          lightSource: LightSource.topLeft,
+                          color: CustomColors.primary),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: NeumorphicText(
+                          state.remaining < 10
+                              ? '0${state.remaining}'
+                              : '${state.remaining}',
+                          style: const NeumorphicStyle(
+                            color: CustomColors.secondary,
+                            depth: 2,
+                            intensity: 1,
+                            shape: NeumorphicShape.flat,
+                          ),
+                          textStyle: NeumorphicTextStyle(fontSize: 30),
                         ),
-                        textStyle: NeumorphicTextStyle(fontSize: 30),
-                      ),
-                    )),
-              ],
-            ),
-          ],
+                      )),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
@@ -267,8 +306,8 @@ class _CardMemory extends StatelessWidget {
                 curve: Curves.easeInOut,
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    return Image.network(
-                      state.cards.elementAt(card.position).info,
+                    return CachedNetworkImage(
+                      imageUrl: state.cards.elementAt(card.position).info,
                       fit: BoxFit.cover,
                       width: constraints.maxWidth,
                       height: constraints.maxHeight,
@@ -277,7 +316,8 @@ class _CardMemory extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                if (!state.cards.elementAt(card.position).isMatched) {
+                if (!state.cards.elementAt(card.position).isMatched &&
+                    state.isEnabled) {
                   BlocProvider.of<DashboardBloc>(context)
                       .add(OnCardTapped(position: card.position));
                 }
@@ -312,7 +352,8 @@ class _CardMemory extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                if (!state.cards.elementAt(card.position).isMatched) {
+                if (!state.cards.elementAt(card.position).isMatched &&
+                    state.isEnabled) {
                   BlocProvider.of<DashboardBloc>(context)
                       .add(OnCardTapped(position: card.position));
                 }

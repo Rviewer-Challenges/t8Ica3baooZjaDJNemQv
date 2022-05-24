@@ -3,7 +3,9 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:memory_game/src/core/themes/colors.dart';
 import 'package:memory_game/src/core/themes/text_styles.dart';
 import 'package:memory_game/src/features/dashboard/presentation/blocs/dashboard/dashboard_bloc.dart';
+import 'package:memory_game/src/features/dashboard/presentation/blocs/timer/timer_bloc.dart';
 import 'package:memory_game/src/features/dashboard/presentation/dashboard_screen.dart';
+import 'package:memory_game/src/features/dashboard/presentation/widgets/custom_dialog.dart';
 import 'package:memory_game/src/features/menu/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:memory_game/src/features/menu/presentation/widgets/rick_morty_memory_icons.dart';
 
@@ -29,6 +31,18 @@ class MenuScreen extends StatelessWidget {
                 ),
                 size: 40,
               ),
+              onTap: () {
+                showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return const CustomDialog(
+                        title: 'Información',
+                        description: 'Desarrollado por @Ferchi para el reto mensual de Mayo',
+                        icon: Icons.developer_mode_rounded,
+                      );
+                    });
+              },
             ),
           ],
         ),
@@ -150,6 +164,7 @@ class CustomButton extends StatelessWidget {
           onPressed: () {
             var level =
                 BlocProvider.of<NavigationBloc>(context).state.levelSelected;
+            BlocProvider.of<TimerBloc>(context).add(TimerReset());
 
             switch (level) {
               case "A":

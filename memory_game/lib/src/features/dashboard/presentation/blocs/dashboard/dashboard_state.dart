@@ -8,6 +8,7 @@ class DashboardState extends Equatable {
   final bool isTapped;
   final int moves;
   final int remaining;
+  final bool isEnabled;
 
   const DashboardState(
       {this.cards = const [],
@@ -16,7 +17,8 @@ class DashboardState extends Equatable {
       this.isCreated = false,
       this.isTapped = false,
       this.moves = 0,
-      this.remaining = 0});
+      this.remaining = 1,
+      this.isEnabled = true});
 
   DashboardState copyWith(
       {List<RickMortyCard>? cards,
@@ -25,7 +27,8 @@ class DashboardState extends Equatable {
       bool? isCreated,
       bool? isTapped,
       int? moves,
-      int? remaining}) {
+      int? remaining,
+      bool? isEnabled}) {
     return DashboardState(
       cards: cards ?? this.cards,
       totalCount: totalCount ?? this.totalCount,
@@ -34,10 +37,11 @@ class DashboardState extends Equatable {
       isTapped: isTapped ?? this.isTapped,
       moves: moves ?? this.moves,
       remaining: remaining ?? this.remaining,
+      isEnabled: isEnabled ?? this.isEnabled,
     );
   }
 
   @override
   List<Object> get props =>
-      [cards, totalCount, tapped, isCreated, isTapped, moves, remaining];
+      [cards, totalCount, tapped, isCreated, isTapped, moves, remaining, isEnabled];
 }

@@ -2,8 +2,11 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:image_downloader/image_downloader.dart';
 import 'package:memory_game/src/features/dashboard/data/models/card.dart';
 import 'package:memory_game/src/features/dashboard/domain/usecases/rick_morty_get_character_use_case.dart';
 
@@ -34,6 +37,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<OnSetMove>((event, emit) => emit(state.copyWith(moves: event.move)));
     on<OnSetRemaining>(
         (event, emit) => emit(state.copyWith(remaining: event.remaining)));
+    on<OnToggleEnabled>(
+        (event, emit) => emit(state.copyWith(isEnabled: event.isEnabled)));
   }
 
   createDashboard(int totalCount) async {
@@ -62,6 +67,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       int count = 0;
       final character = characters[i];
       final image = (await _getCharacterUseCase.call(character)).image;
+      await getImages(image);
       while (count != 2) {
         final position = next(0, totalCount);
         if (cards.elementAt(position).position == 100) {
@@ -90,12 +96,17 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     await setDashboard(auxCards);
     if (state.tapped.isNotEmpty) {
       addMove();
+      toggleIsEnabled();
       if (state.tapped.elementAt(0).character == auxCards[position].character) {
         add(OnPairMatched(state.tapped.elementAt(0).position, position));
       } else {
         add(OnPairNotMatched(state.tapped.elementAt(0).position, position));
       }
     }
+  }
+
+  toggleIsEnabled() {
+    add(OnToggleEnabled(isEnabled: !state.isEnabled));
   }
 
   setDashboard(List<RickMortyCard> cards) {
@@ -110,16 +121,27 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         auxCards[cardTwo].copyWith(visible: true, isMatched: true);
     setDashboard(auxCards);
     add(const OnSetTap(cards: []));
+    toggleIsEnabled();
     subtractRemaining();
   }
 
   setRemaining(int remaining) {
-    print('DEBUG: $remaining');
     add(OnSetRemaining(remaining));
   }
 
   subtractRemaining() {
     add(OnSetRemaining(state.remaining - 1));
+  }
+
+  getImages(String url) async {
+    var imageId = await ImageDownloader.downloadImage(url);
+    var path = await ImageDownloader.findPath(imageId!);
+    var fileBytes = await File(path!).readAsBytes();
+    await DefaultCacheManager().putFile(
+      url,
+      fileBytes,
+      fileExtension: "jpg",
+    );
   }
 
   _pairNotMatched(int cardOne, int cardTwo) async {
@@ -131,6 +153,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     auxCards[cardTwo] =
         auxCards[cardTwo].copyWith(visible: false, isMatched: false);
     setDashboard(auxCards);
+    toggleIsEnabled();
     add(const OnSetTap(cards: []));
   }
 
@@ -138,7 +161,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     add(OnSetMove(state.moves + 1));
   }
 
-  cleanBloc() {
+  cleanBloc() async {
+    for (int i = 0; i < state.cards.length; i++) {
+      await CachedNetworkImage.evictFromCache(state.cards[i].info);
+    }
     add(OnCleanBloc());
   }
 }

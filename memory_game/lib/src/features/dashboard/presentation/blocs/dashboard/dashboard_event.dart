@@ -61,6 +61,7 @@ class OnSetTap extends DashboardEvent {
   @override
   List<Object> get props => [cards];
 }
+
 class OnSetMove extends DashboardEvent {
   final int move;
 
@@ -79,3 +80,11 @@ class OnSetRemaining extends DashboardEvent {
   List<Object> get props => [remaining];
 }
 
+class OnToggleEnabled extends DashboardEvent {
+  final bool isEnabled;
+
+  const OnToggleEnabled({required this.isEnabled});
+
+  @override
+  List<Object> get props => [isEnabled];
+}
