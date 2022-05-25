@@ -24,16 +24,20 @@ class CustomDialog extends StatelessWidget {
               children: <Widget>[
                 Text(description, style: GoogleFonts.roboto()),
                 const SizedBox(height: 10),
-              NeumorphicIcon(
-                  icon,
-                  style: const NeumorphicStyle(
-                    color: CustomColors.secondary,
-                    depth: 5,
-                    shape: NeumorphicShape.convex,
-                    intensity: 1,
+              Container(
+                height: 200,
+                width: 60,
+                child: NeumorphicIcon(
+                    icon,
+                    style: const NeumorphicStyle(
+                      color: CustomColors.secondary,
+                      depth: 5,
+                      shape: NeumorphicShape.convex,
+                      intensity: 1,
+                    ),
+                    size: 200,
                   ),
-                  size: 200,
-                ),
+              ),
               ],
             ),
           ),

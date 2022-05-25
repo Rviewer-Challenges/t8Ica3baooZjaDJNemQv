@@ -67,7 +67,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       int count = 0;
       final character = characters[i];
       final image = (await _getCharacterUseCase.call(character)).image;
-      await getImages(image);
+      //await getImages(image);
       while (count != 2) {
         final position = next(0, totalCount);
         if (cards.elementAt(position).position == 100) {
