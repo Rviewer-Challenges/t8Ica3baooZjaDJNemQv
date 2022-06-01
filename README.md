@@ -1,11 +1,17 @@
 # Memory Game
-[Descargar apk:](https://drive.google.com/drive/folders/1jotiv6tGJV9WewO77EEPkNTB04KiEsWC?usp=sharing)
-Who hasn't played card games at some point? From a very young age to a beer night with friends, right?
+[Descargar apk](https://drive.google.com/drive/folders/1jotiv6tGJV9WewO77EEPkNTB04KiEsWC?usp=sharing)
+El proyecto fue realizado en flutter con ayuda de la api de [Rick & Morty](https://rickandmortyapi.com/)
 
-Well, for this Challenge you will have to choose your favourite theme and recreate
-the [famous game](https://en.wikipedia.org/wiki/Concentration_(card_game)).
 
-![Brais Moure Challenge card](moure_memory-game.png)
+<p float="left">
+  <img src="Screenshot_7.jpg" width="250" />
+  <img src="Screenshot_1.jpg" width="250" />
+  <img src="Screenshot_2.jpg" width="250" /> 
+  <img src="Screenshot_3.jpg" width="250" />
+  <img src="Screenshot_4.jpg" width="250" />
+  <img src="Screenshot_5.jpg" width="250" /> 
+  <img src="Screenshot_6.jpg" width="250" />
+</p>
 
 > This is a challenge created by [MoureDev](https://www.twitch.tv/mouredev). He will review and give feedback to some
 > proposed solutions from the community in one of his Twitch livestreams 😻 
@@ -49,21 +55,3 @@ the most important parts of the application. You would also be able to defend yo
 [Rviewer](https://rviewer.io), once you submit your solution.
 
 ---
-
-## How to submit your solution
-
-* Push your code to the `devel` branch - we encourage you to commit regularly to show your thinking process was.
-* **Create a new Pull Request** to `main` branch & **merge it**.
-
-Once merged you **won't be able to change or add** anything to your solution, so double-check that everything is as you
-expected!
-
-Remember that **there is no countdown**, so take your time and implement a solution that you are proud!
-
---- 
-
-<p align="center">
-  If you have any feedback or problem, <a href="mailto:help@rviewer.io">let us know!</a> 🤘
-  <br><br>
-  Made with ❤️ by <a href="https://rviewer.io">Rviewer</a>
-</p>
